@@ -5,3 +5,4 @@
 <br />
 
 - <a href="https://github.com/NikhilSharma03/Solana-Playground/tree/main/Airdrop">Airdrop</a><span> - Program to Airdrop SOL</span>
+- <a href="https://github.com/NikhilSharma03/Solana-Playground/tree/main/Custom_Fungible_Token">Custom Token</a><span> - Program to create custom fungible token</span>
