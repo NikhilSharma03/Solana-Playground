@@ -9,7 +9,7 @@ const {
 /**
  * Generates new wallet.
  *
- * @return {Keypair} keypair of wallet.
+ * @returns {Keypair} keypair of wallet.
  */
 const generateWallet = () => {
   const keypair = Keypair.generate();
@@ -20,7 +20,7 @@ const generateWallet = () => {
  * Returns wallet balance
  *
  * @param {PublicKey} walletAddress The wallet to check balance of.
- * @return {Promise<number>} balance of the wallet.
+ * @returns {Promise<number>} balance of the wallet.
  */
 const getBalance = async (walletAddress) => {
   try {
@@ -28,7 +28,7 @@ const getBalance = async (walletAddress) => {
     const balance = await connection.getBalance(walletAddress, "confirmed");
     return balance;
   } catch (err) {
-    console.log(err);
+    throw new Error("failed to get balance");
   }
 };
 
@@ -47,17 +47,37 @@ const airdropSol = async (walletAddress, quantity) => {
       quantity * LAMPORTS_PER_SOL
     );
     await connection.confirmTransaction(signature);
-  } catch (err) {}
+  } catch (err) {
+    throw new Error("failed to airdrop SOL");
+  }
 };
 
 const main = async () => {
   const wallet = generateWallet();
   const publicKey = wallet.publicKey;
-  const balance = await getBalance(publicKey);
-  console.log("Wallet Balance:", balance / LAMPORTS_PER_SOL, "SOL");
-  await airdropSol(publicKey, 2);
-  const latestBalance = await getBalance(publicKey);
-  console.log("Wallet Balance:", latestBalance / LAMPORTS_PER_SOL, "SOL");
+
+  try {
+    const balance = await getBalance(publicKey);
+    console.log("Wallet Balance:", balance / LAMPORTS_PER_SOL, "SOL");
+  } catch (err) {
+    console.log(err);
+    return;
+  }
+
+  try {
+    await airdropSol(publicKey, 2);
+  } catch (err) {
+    console.log(err);
+    return;
+  }
+
+  try {
+    const latestBalance = await getBalance(publicKey);
+    console.log("Wallet Balance:", latestBalance / LAMPORTS_PER_SOL, "SOL");
+  } catch (err) {
+    console.log(err);
+    return;
+  }
 };
 
 main();
